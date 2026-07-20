@@ -19,9 +19,9 @@
 - Then: 400 in both cases, and a subsequent `GET /api/tickets` is still empty — nothing was created
 
 ## B-3: AC-3 [behavior]: `POST /api/projects` with `name` and `key` returns 201 with the created project; missing `name` or `key` → 400.
-- Given:
-- When:
-- Then:
+- Given: a running app with only the default project existing
+- When: a client POSTs `/api/projects` with `{name, key}` (happy path), OR with `name` or `key` missing/empty (error path)
+- Then: happy path → 201 with the created project (server-assigned unique `id`, `name`/`key` echoed), and it appears in `GET /api/projects`; error path → 400 and nothing created
 
 ## B-4: AC-4 [e2e]: submitting the board's create form (title + description) makes the new ticket appear in the To Do column without a manual page reload, and the form clears on success.
 - Given:
