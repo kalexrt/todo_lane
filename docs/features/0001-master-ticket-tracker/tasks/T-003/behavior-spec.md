@@ -14,9 +14,9 @@
 - Then: 201 with the created ticket — server-assigned unique `id`, `status: 'todo'`, `projectId` equal to the default project's id, `title`/`description` echoed — and a subsequent `GET /api/tickets` includes it
 
 ## B-2: AC-2 [behavior]: missing/empty/whitespace `title` → 400 and nothing is created; unknown `projectId` → 400 and nothing is created.
-- Given:
-- When:
-- Then:
+- Given: a running app with the default project seeded, no tickets yet
+- When: a client POSTs `/api/tickets` with a missing/empty/whitespace-only `title`, OR with a valid `title` but a `projectId` that names no existing project
+- Then: 400 in both cases, and a subsequent `GET /api/tickets` is still empty — nothing was created
 
 ## B-3: AC-3 [behavior]: `POST /api/projects` with `name` and `key` returns 201 with the created project; missing `name` or `key` → 400.
 - Given:

@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
+import { ProjectsModule } from '../projects/projects.module';
 import { TicketsController } from './tickets.controller';
 import { TicketsService } from './tickets.service';
 
 @Module({
+  imports: [ProjectsModule],
   controllers: [TicketsController],
   providers: [TicketsService],
   exports: [TicketsService],

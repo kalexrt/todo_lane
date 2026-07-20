@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DEFAULT_PROJECT_ID } from '../tickets/tickets.service';
-import { Project } from './project.entity';
+import { DEFAULT_PROJECT_ID, Project } from './project.entity';
 
 @Injectable()
 export class ProjectsService {

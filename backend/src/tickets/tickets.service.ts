@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
+import { DEFAULT_PROJECT_ID } from '../projects/project.entity';
 import { Ticket } from './ticket.entity';
 
-export const DEFAULT_PROJECT_ID = 'default';
+export { DEFAULT_PROJECT_ID };
 
 @Injectable()
 export class TicketsService {
