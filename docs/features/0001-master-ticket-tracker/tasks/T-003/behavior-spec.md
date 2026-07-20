@@ -9,9 +9,9 @@
 > non-functional ACs are not RED→GREEN cycles — any are listed in their own section.
 
 ## B-1 (tracer bullet): AC-1 [behavior]: `POST /api/tickets` with a non-empty `title` (optional `description`) returns 201 with the created ticket — server-assigned unique `id`, status `todo`, `projectId` defaulting to the default project — and the ticket appears in subsequent `GET /api/tickets`.
-- Given:
-- When:
-- Then:
+- Given: a running app with the default project seeded, no tickets yet
+- When: a client POSTs `/api/tickets` with `{title, description?}` (no projectId)
+- Then: 201 with the created ticket — server-assigned unique `id`, `status: 'todo'`, `projectId` equal to the default project's id, `title`/`description` echoed — and a subsequent `GET /api/tickets` includes it
 
 ## B-2: AC-2 [behavior]: missing/empty/whitespace `title` → 400 and nothing is created; unknown `projectId` → 400 and nothing is created.
 - Given:
