@@ -17,3 +17,18 @@ export async function fetchTickets(): Promise<Ticket[]> {
   }
   return res.json() as Promise<Ticket[]>
 }
+
+export async function createTicket(data: {
+  title: string
+  description?: string
+}): Promise<Ticket> {
+  const res = await fetch('/api/tickets', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) {
+    throw new Error(`POST /api/tickets failed: ${res.status}`)
+  }
+  return res.json() as Promise<Ticket>
+}

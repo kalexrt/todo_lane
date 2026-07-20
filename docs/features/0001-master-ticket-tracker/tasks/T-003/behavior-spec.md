@@ -24,7 +24,7 @@
 - Then: happy path → 201 with the created project (server-assigned unique `id`, `name`/`key` echoed), and it appears in `GET /api/projects`; error path → 400 and nothing created
 
 ## B-4: AC-4 [e2e]: submitting the board's create form (title + description) makes the new ticket appear in the To Do column without a manual page reload, and the form clears on success.
-- Given:
-- When:
-- Then:
+- Given: the app rendered with `fetch` faked — initial `GET /api/tickets` returns `[]`, and `POST /api/tickets` resolves with a created ticket
+- When: a user types a title (and description) into the create form and submits it
+- Then: the board refetches tickets and the new ticket's title appears in the To Do column without a manual reload; the form's inputs are cleared
 

@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { fetchTickets } from './api'
 import type { Ticket, TicketStatus } from './api'
+import CreateTicketForm from './CreateTicketForm'
 import './App.css'
 
 const COLUMNS: { status: TicketStatus; label: string }[] = [
@@ -12,13 +13,18 @@ const COLUMNS: { status: TicketStatus; label: string }[] = [
 function App() {
   const [tickets, setTickets] = useState<Ticket[]>([])
 
-  useEffect(() => {
+  const loadTickets = useCallback(() => {
     fetchTickets().then(setTickets).catch(console.error)
   }, [])
+
+  useEffect(() => {
+    loadTickets()
+  }, [loadTickets])
 
   return (
     <main>
       <h1>Ticket Tracker</h1>
+      <CreateTicketForm onCreated={loadTickets} />
       <div className="board">
         {COLUMNS.map(({ status, label }) => (
           <section key={status} aria-label={label} className="column">
