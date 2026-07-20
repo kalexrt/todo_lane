@@ -14,9 +14,9 @@
 - Then: 200 with a JSON array — `[]` at boot; seeded tickets appear with exactly `id`, `projectId`, `title`, `description`, `status` (from the union, `todo` on creation); with `?projectId=` only that project's tickets return
 
 ## B-2: AC-2 [behavior]: `GET /api/projects` returns 200 with a JSON array of projects including one default project (`id`, `name`, `key`) present at boot with no setup call.
-- Given:
-- When:
-- Then:
+- Given: a freshly booted app (in-process Nest app with the `/api` prefix), no setup calls made
+- When: a client GETs `/api/projects`
+- Then: 200 with a JSON array containing exactly one project — the default — with string `id`, `name`, and `key` fields, and the default project's id matches the `projectId` that tickets receive when created without one
 
 ## B-3: AC-3 [behavior]: the board page renders three columns labeled To Do / In Progress / Done and places each ticket fetched from the API into the column matching its status (no local seed data).
 - Given:
