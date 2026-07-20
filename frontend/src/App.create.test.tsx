@@ -12,13 +12,15 @@ function stubApiForCreate() {
     description: 'drive it via TDD',
     status: 'todo',
   }
+  const serverTickets: Ticket[] = []
 
   const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
     const url = typeof input === 'string' ? input : input.toString()
     if (url === '/api/tickets' && (!init || init.method === undefined)) {
-      return Promise.resolve({ ok: true, json: async () => [] })
+      return Promise.resolve({ ok: true, json: async () => [...serverTickets] })
     }
     if (url === '/api/tickets' && init?.method === 'POST') {
+      serverTickets.push(createdTicket)
       return Promise.resolve({ ok: true, json: async () => createdTicket })
     }
     return Promise.reject(new Error(`unexpected fetch: ${url}`))
