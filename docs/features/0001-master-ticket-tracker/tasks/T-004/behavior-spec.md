@@ -9,9 +9,9 @@
 > non-functional ACs are not RED→GREEN cycles — any are listed in their own section.
 
 ## B-1 (tracer bullet): AC-1 [behavior]: `PATCH /api/tickets/:id/status` with `{"status": "todo"|"in_progress"|"done"}` returns 200 with the updated ticket; any valid status may move to any other, and the new status persists across a subsequent `GET /api/tickets`.
-- Given:
-- When:
-- Then:
+- Given: a running app with one existing ticket (status `todo`, created via the tickets service)
+- When: a client PATCHes `/api/tickets/:id/status` with each of the three statuses in turn (todo→in_progress, in_progress→done, done→todo — proving any-to-any, not just forward progression)
+- Then: 200 with the updated ticket reflecting the new status each time, and a subsequent `GET /api/tickets` shows that same status persisted
 
 ## B-2: AC-2 [behavior]: a status outside the three allowed strings → 400 with the ticket unchanged; an unknown ticket id → 404.
 - Given:

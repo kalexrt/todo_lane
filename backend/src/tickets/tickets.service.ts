@@ -1,8 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { DEFAULT_PROJECT_ID } from '../projects/project.entity';
 import { ProjectsService } from '../projects/projects.service';
-import { Ticket } from './ticket.entity';
+import { Ticket, TicketStatus } from './ticket.entity';
 
 export { DEFAULT_PROJECT_ID };
 
@@ -47,5 +47,15 @@ export class TicketsService {
       throw new BadRequestException(`Unknown projectId: ${projectId}`);
     }
     return this.create({ ...data, projectId });
+  }
+
+  /** The only code path that mutates a ticket's status — future transition rules gate here. */
+  updateStatus(id: string, status: TicketStatus): Ticket {
+    const ticket = this.tickets.find((t) => t.id === id);
+    if (!ticket) {
+      throw new NotFoundException(`Unknown ticket id: ${id}`);
+    }
+    ticket.status = status;
+    return ticket;
   }
 }
