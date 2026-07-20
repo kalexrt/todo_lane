@@ -19,9 +19,9 @@
 - Then: 200 with a JSON array containing exactly one project — the default — with string `id`, `name`, and `key` fields, and the default project's id matches the `projectId` that tickets receive when created without one
 
 ## B-3: AC-3 [behavior]: the board page renders three columns labeled To Do / In Progress / Done and places each ticket fetched from the API into the column matching its status (no local seed data).
-- Given:
-- When:
-- Then:
+- Given: the app component rendered with the HTTP API faked (stubbed `fetch`) returning a payload of tickets with mixed statuses — or an empty array
+- When: the page loads (the component fetches tickets on mount, one request to the tickets endpoint)
+- Then: three columns titled To Do / In Progress / Done are visible; each ticket's title appears in exactly the column matching its status; with an empty payload the three columns render empty (no locally seeded tickets)
 
 ## B-4: AC-4 [e2e]: with both dev servers running, opening the frontend in a browser shows the three-column board backed by live API data.
 - Given:
