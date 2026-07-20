@@ -1,11 +1,17 @@
-## Task T-004 — <title>
-**Parent:** story S-0001-master-ticket-tracker.nn · feature 0001-master-ticket-tracker (docs/features/0001-master-ticket-tracker-*/ — its PRD + TSD)
-**Slice:** a complete observable behavior end-to-end + tests (full vertical — a disconnected layer = smell)
-**Acceptance criteria:** (tag each `behavior`/`invariant`/`non-functional`/`e2e`; behavior ACs = observable outcome through an interface — NO "calls X / saves to table Y / uses lib Z")
-- [ ] AC-1 [behavior]: <observable outcome through interface>
-**End-to-end AC:** AC-<n> [e2e] — reachable through the running app (required: green component/unit ≠ reachable)
-**Tests:** AC-1  ← ordered; first = tracer bullet
-<!-- exception: Tests: N/A — reason: config | scaffolding | spike | refactor | tooling | integration -->
-**Test scope:** tests/T-004/   ← documentation: where this task's OWN tests live. Scope is NOT configured — red/green scope to the changed test files and `verify` derives it from the RED commits (ADR-0002); `review` runs the FULL suite. This line is a human pointer only.
-<!-- approval: written by `lane approve` as frontmatter (approved_by/at/sha256) after a human confirms — never hand-edit -->
+---
+approved_by: "Kalash Shrestha"
+approved_at: "2026-07-20"
+approved_sha256: "8a57e6fb858021b4e0378a8f4c8d5d7a1e64b9751e7361a020c921bd5d5cd00e"
+---
+## Task T-004 — Move a ticket between statuses
+**Parent:** story S-0001.03 · feature 0001-master-ticket-tracker (docs/features/0001-master-ticket-tracker/ — its PRD + TSD)
+**Slice:** full vertical — dedicated status-change endpoint (the future gating seam) plus per-card move buttons on the board.
+**Acceptance criteria:** (tag each `behavior`/`invariant`/`non-functional`/`e2e`)
+- [ ] AC-1 [behavior]: `PATCH /api/tickets/:id/status` with `{"status": "todo"|"in_progress"|"done"}` returns 200 with the updated ticket; any valid status may move to any other, and the new status persists across a subsequent `GET /api/tickets`.
+- [ ] AC-2 [behavior]: a status outside the three allowed strings → 400 with the ticket unchanged; an unknown ticket id → 404.
+- [ ] AC-3 [invariant]: the status endpoint and the single service method behind it are the only code path that mutates a ticket's status — no generic ticket-update surface exists.
+- [ ] AC-4 [e2e]: clicking a move button on a ticket card moves the card to the target column, and the change survives a page refresh (server-held state).
+**End-to-end AC:** AC-4 [e2e] — reachable through the running app.
+**Tests:** AC-1, AC-2, AC-3, AC-4  ← ordered; first = tracer bullet (legal move persists). AC-4's browser path verified as smoke in the verification report; its button behavior unit-tested with a faked API.
+**Test scope:** backend/test/ (supertest integration) + frontend/src/ colocated *.test.tsx
 **Done =** reviewable PR, all tests pass, links to chain. One PR per task (default).
