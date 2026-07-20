@@ -2,7 +2,7 @@ import { BadRequestException, Body, Controller, Get, Post, Query } from '@nestjs
 import { ProjectsService } from '../projects/projects.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { DEFAULT_PROJECT_ID } from './tickets.service';
-import { Ticket } from './ticket.entity';
+import type { Ticket } from './ticket.entity';
 import { TicketsService } from './tickets.service';
 
 @Controller('tickets')

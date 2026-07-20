@@ -9,6 +9,39 @@ main h1 {
   font-size: 1.5rem;
 }
 
+.create-ticket-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: end;
+  margin-bottom: 1.5rem;
+}
+
+.create-ticket-form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  text-align: left;
+  color: var(--text-h);
+}
+
+.create-ticket-form input {
+  padding: 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+}
+
+.create-ticket-form button {
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+
 .board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
