@@ -9,9 +9,9 @@
 > non-functional ACs are not RED→GREEN cycles — any are listed in their own section.
 
 ## B-1 (tracer bullet): AC-1 [behavior]: `GET /api/tickets` returns 200 with a JSON array of tickets, each carrying `id`, `projectId`, `title`, `description`, `status` (exactly one of `todo|in_progress|done`); optional `?projectId=` filters.
-- Given:
-- When:
-- Then:
+- Given: a running app (in-process Nest app with the `/api` prefix); ticket state empty at boot, or seeded through the tickets service (the domain seam — no HTTP create surface exists until T-003)
+- When: a client GETs `/api/tickets` (optionally with `?projectId=<id>`)
+- Then: 200 with a JSON array — `[]` at boot; seeded tickets appear with exactly `id`, `projectId`, `title`, `description`, `status` (from the union, `todo` on creation); with `?projectId=` only that project's tickets return
 
 ## B-2: AC-2 [behavior]: `GET /api/projects` returns 200 with a JSON array of projects including one default project (`id`, `name`, `key`) present at boot with no setup call.
 - Given:
