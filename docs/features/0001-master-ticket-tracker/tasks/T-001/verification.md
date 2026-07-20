@@ -1,3 +1,8 @@
+---
+approved_by: "Kalash Shrestha"
+approved_at: "2026-07-20"
+approved_sha256: "6ec96298cc370a44b4e49202601ed5d53840a587586061b8281853e3db1fd4f6"
+---
 ## Verification — Task T-001 — 2026-07-20
 > Critic anchored to TSD (external spec), NOT to the code. ★GATE: owner confirms/dismisses every flag.
 > Critic: fresh-context subagent given only the card, the TSD snapshot, and `git diff main...T-001`. Verdict: PASS, zero flags.
