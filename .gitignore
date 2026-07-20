@@ -1,0 +1,29 @@
+# Scaffolded by `lane init` (only when no .gitignore existed) — extend or trim freely.
+# Why it ships: vendored deps and local noise must never enter the TDD ledger, and
+# `lane start` refuses to claim a task while a vendored dir is untracked and unignored.
+
+# Dependencies — provisioned by setup_cmd in every fresh worktree, never committed.
+# Bare names (no trailing slash) so the rule matches even before the dir is created — a
+# trailing-slash entry only matches a path git can already see is a directory.
+node_modules
+vendor
+.venv
+venv
+__pycache__
+*.pyc
+
+# Build output
+dist
+build
+coverage
+target
+
+# Environment / secrets (lane green refuses untracked secret files regardless)
+.env
+.env.*
+!.env.example
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.log

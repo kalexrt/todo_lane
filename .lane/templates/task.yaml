@@ -1,0 +1,19 @@
+task_id: <T-ID>
+# seq — display-only creation order within the feature (lane new card stamps max+1). The
+# task_id is a collision-proof random token with no inherent order; seq is what lane ready /
+# lane status sort by, so humans see a stable 1,2,3 cadence. Not an identity — never gated on.
+seq: <SEQ>
+status: queued
+parent: <FEAT>
+# story — S-NNNN.nn: anchors the Critic's TSD snapshot (machine-read; the card's
+# prose Parent line is only a legacy fallback). lane start DIES if this is set but
+# no TSD resolves — a typo here must fail loudly, not silently skip the anchor.
+story: ""
+depends_on: []
+# tests_mode — set automatically by `lane start` from the card's Tests: line.
+#   red-green : full TDD cycle enforced; lane verify replays RED→GREEN ledger.
+#   na        : no TDD ledger; lane verify + lane review skip test checks.
+#               Card must have `Tests: N/A — <reason>` to trigger this.
+#               Use `lane red --regression` inside red-green to commit a passing
+#               test outside the ledger (non-ledger guard, verify ignores it).
+tests_mode: red-green

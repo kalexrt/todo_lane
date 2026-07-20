@@ -1,0 +1,9 @@
+# Tasks live here — ONE FOLDER PER TASK: docs/tasks/T-001/ (ADR-0006).
+# Each folder holds the whole task and rides its branch into the PR:
+#   docs/tasks/T-001/
+#     task.yaml          registry record (status, owner, depends_on, base_ref)
+#     card.md            lane new card  T-001
+#     exec-plan.md       lane new plan  T-001
+#     snapshot-TSD.md     frozen Critic anchor (lane start)
+#     verification.md    lane review  → the Critic's report, ships in the PR
+# Scaffold a task with `lane new card T-001`. See T-EXAMPLE/ for the registry shape.
