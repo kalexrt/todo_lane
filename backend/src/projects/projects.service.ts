@@ -12,6 +12,10 @@ export class ProjectsService {
     return this.projects;
   }
 
+  exists(id: string): boolean {
+    return this.projects.some((project) => project.id === id);
+  }
+
   create(data: { name: string; key: string }): Project {
     const project: Project = {
       id: randomUUID(),
