@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { fetchTickets } from './api'
+import { fetchTickets, updateTicketStatus } from './api'
 import type { Ticket, TicketStatus } from './api'
 import CreateTicketForm from './CreateTicketForm'
 import './App.css'
@@ -21,6 +21,11 @@ function App() {
     loadTickets()
   }, [loadTickets])
 
+  async function moveTicket(id: string, status: TicketStatus) {
+    await updateTicketStatus(id, status)
+    loadTickets()
+  }
+
   return (
     <main>
       <h1>Ticket Tracker</h1>
@@ -36,6 +41,19 @@ function App() {
                   <li key={ticket.id} className="ticket">
                     <strong>{ticket.title}</strong>
                     {ticket.description && <p>{ticket.description}</p>}
+                    <div className="ticket-actions">
+                      {COLUMNS.filter((column) => column.status !== ticket.status).map(
+                        (column) => (
+                          <button
+                            key={column.status}
+                            type="button"
+                            onClick={() => moveTicket(ticket.id, column.status)}
+                          >
+                            Move to {column.label}
+                          </button>
+                        ),
+                      )}
+                    </div>
                   </li>
                 ))}
             </ul>

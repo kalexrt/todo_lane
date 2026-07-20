@@ -32,3 +32,18 @@ export async function createTicket(data: {
   }
   return res.json() as Promise<Ticket>
 }
+
+export async function updateTicketStatus(
+  id: string,
+  status: TicketStatus,
+): Promise<Ticket> {
+  const res = await fetch(`/api/tickets/${id}/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status }),
+  })
+  if (!res.ok) {
+    throw new Error(`PATCH /api/tickets/${id}/status failed: ${res.status}`)
+  }
+  return res.json() as Promise<Ticket>
+}
