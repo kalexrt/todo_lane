@@ -1,10 +1,11 @@
 ---
-approved_by: ""
-approved_at: ""
+approved_by: "Kalash Shrestha"
+approved_at: "2026-07-20"
 # planned_behaviors — machine-read count of RED→GREEN cycles (B-N). Leave empty to let
 # lane infer from B-N labels below; SET it when an AC becomes a regression guard so
 # `lane next` knows the remaining count (frontmatter edits need no re-approval).
 planned_behaviors: "4"
+approved_sha256: "c176d9e3805e69374a0c05ac635b4f19aafdd90c81e62292bbc60eb2345c8e10"
 ---
 ## Exec Plan — Task T-003
 > Authored during planning, before any code. ★GATE: DEV/SA approve via `lane approve` BEFORE any code (lane writes the stamp). Resolve all ambiguities first.
