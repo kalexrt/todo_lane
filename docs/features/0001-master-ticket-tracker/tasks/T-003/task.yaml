@@ -9,7 +9,7 @@ parent: 0001-master-ticket-tracker
 # prose Parent line is only a legacy fallback). lane start DIES if this is set but
 # no TSD resolves — a typo here must fail loudly, not silently skip the anchor.
 story: "S-0001.02"
-depends_on: []
+depends_on: [T-002]
 # tests_mode — set automatically by `lane start` from the card's Tests: line.
 #   red-green : full TDD cycle enforced; lane verify replays RED→GREEN ledger.
 #   na        : no TDD ledger; lane verify + lane review skip test checks.
