@@ -1,3 +1,8 @@
+---
+approved_by: "Kalash Shrestha"
+approved_at: "2026-07-20"
+approved_sha256: "7bda981698d5c7f6db6f0fae9b5f848d7f4168f77fe009ec627656159e2ba614"
+---
 ## Verification — Task T-002 — 2026-07-20
 > Critic anchored to TSD (external spec), NOT to the code. ★GATE: owner confirms/dismisses every flag.
 > Critic: fresh-context subagent given only the card, TSD snapshot, behavior spec, and `git diff main...T-002`. Verdict: PASS, zero flags, GREEN tripwire cleared.
