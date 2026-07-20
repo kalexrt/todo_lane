@@ -3,7 +3,7 @@ task_id: T-004
 # task_id is a collision-proof random token with no inherent order; seq is what lane ready /
 # lane status sort by, so humans see a stable 1,2,3 cadence. Not an identity — never gated on.
 seq: 4
-status: in_progress
+status: done
 parent: 0001-master-ticket-tracker
 # story — S-NNNN.nn: anchors the Critic's TSD snapshot (machine-read; the card's
 # prose Parent line is only a legacy fallback). lane start DIES if this is set but
