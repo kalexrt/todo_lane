@@ -6,7 +6,7 @@
 - Runtime: Node.js 20+
 - Language: TypeScript (strict) in both packages
 - Framework: NestJS (backend), React 18 + Vite (frontend)
-- DB: none — in-memory stores inside Nest services, reset on restart by design
+- DB: SQLite, file-based, accessed through the existing Nest services (ADR-0002) — no ORM
 - Test runner: Jest + supertest (backend), Vitest + React Testing Library (frontend)
 
 ## Conventions
@@ -17,7 +17,7 @@
 
 ## Hard Rules
 - Never mutate a ticket's status except through the tickets service's single status-change method (backed by `PATCH /api/tickets/:id/status`) — it is the designated seam for future transition gating.
-- Never add persistence, auth, or new dependencies beyond the stack above without an ADR — the product is deliberately barebones.
+- Never add auth, a second persistence mechanism/ORM, or new dependencies beyond the stack above without an ADR — the product is deliberately barebones.
 - Always route frontend→backend communication through the `/api` REST boundary — the frontend holds no domain rules.
 
 ## File Organization
