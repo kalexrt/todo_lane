@@ -1,0 +1,3 @@
+/* Your screens' styles. This file is yours — proto's own chrome ships
+   precompiled and scoped, so nothing here leaks into it (or vice versa). */
+@import 'tailwindcss';
