@@ -3,7 +3,7 @@ task_id: T-sqlite-persistence-tp1eij
 # task_id is a collision-proof random token with no inherent order; seq is what lane ready /
 # lane status sort by, so humans see a stable 1,2,3 cadence. Not an identity — never gated on.
 seq: 1
-status: queued
+status: in_progress
 parent: 0002-enhancement-sqlite-persistence
 # story — S-NNNN.nn: anchors the Critic's TSD snapshot (machine-read; the card's
 # prose Parent line is only a legacy fallback). lane start DIES if this is set but
@@ -17,3 +17,5 @@ depends_on: []
 #               Use `lane red --regression` inside red-green to commit a passing
 #               test outside the ledger (non-ledger guard, verify ignores it).
 tests_mode: red-green
+base_ref: main
+worktree_path: /home/leapfrog/Documents/literacy_coe/jira.wt/T-sqlite-persistence-tp1eij
