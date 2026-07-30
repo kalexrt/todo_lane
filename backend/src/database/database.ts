@@ -1,0 +1,72 @@
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import SQLite, { Database } from 'better-sqlite3';
+import { mkdirSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+
+/** Selects an ephemeral database — SQLite's own convention. */
+export const EPHEMERAL_DATABASE = ':memory:';
+
+/**
+ * Where the database lives. Read fresh on every call (never cached at module
+ * load) so a test can point TRACKER_DB_PATH somewhere isolated before building
+ * an application instance.
+ *
+ * The default resolves against this file's own location rather than the working
+ * directory, so it always lands inside the backend package (backend/data/) —
+ * whether started via ts-node from src/ or as compiled output from dist/.
+ */
+export function resolveDatabasePath(): string {
+  const configured = process.env.TRACKER_DB_PATH?.trim();
+  return configured
+    ? configured
+    : join(__dirname, '..', '..', 'data', 'tracker.db');
+}
+
+/**
+ * Opens the database, creating the file, its parent directory and the schema
+ * when absent, so a fresh checkout boots cleanly. Safe to run against an
+ * existing database: it neither drops nor duplicates anything.
+ */
+export function openDatabase(path: string = resolveDatabasePath()): Database {
+  // Only a real file needs a directory; an ephemeral database has no path.
+  if (path !== EPHEMERAL_DATABASE) {
+    mkdirSync(dirname(path), { recursive: true });
+  }
+
+  const db = new SQLite(path);
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS projects (
+      id   TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      key  TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS tickets (
+      id          TEXT PRIMARY KEY,
+      projectId   TEXT NOT NULL,
+      title       TEXT NOT NULL,
+      description TEXT NOT NULL,
+      status      TEXT NOT NULL
+    );
+  `);
+  return db;
+}
+
+/**
+ * Owns the connection handle — nothing more. Every statement that reads or
+ * writes a domain row lives in ProjectsService / TicketsService (ADR-0002:
+ * no repository layer beyond those services).
+ */
+@Injectable()
+export class DatabaseConnection implements OnModuleDestroy {
+  readonly db: Database = openDatabase();
+
+  /**
+   * Releases the handle when the application is torn down in-process (app.close(),
+   * which the specs rely on). NOT a durability mechanism, and NOT reached on a real
+   * SIGINT/SIGTERM — main.ts does not enable Nest's shutdown hooks. Writes are
+   * already committed as each statement runs, so an abrupt kill loses nothing.
+   */
+  onModuleDestroy(): void {
+    this.db.close();
+  }
+}
