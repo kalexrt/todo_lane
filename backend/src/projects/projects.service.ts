@@ -12,11 +12,14 @@ export class ProjectsService {
   }
 
   /**
-   * Ensures the default project rather than inserting it: booting repeatedly
-   * against one database leaves exactly one, and never overwrites a project the
-   * user created or changed. Runs in the constructor — the direct analogue of
-   * the field initializer it replaced — so no method can observe a missing
-   * default, regardless of whether a caller initialises the application.
+   * Ensures the default project rather than inserting it: OR IGNORE is what makes
+   * booting repeatedly against one database leave exactly one row and never
+   * overwrite a default the user has since renamed (OR REPLACE would silently
+   * reset it; a plain INSERT would collide on the primary key).
+   *
+   * Runs in the constructor — the direct analogue of the field initializer it
+   * replaced — so no method can observe a missing default, regardless of whether
+   * a caller initialises the application.
    */
   private ensureDefaultProject(): void {
     this.connection.db

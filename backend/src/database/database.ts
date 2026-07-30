@@ -3,7 +3,7 @@ import SQLite, { Database } from 'better-sqlite3';
 import { mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
-/** Selects an ephemeral database — SQLite's own convention. Used by tests. */
+/** Selects an ephemeral database — SQLite's own convention. */
 export const EPHEMERAL_DATABASE = ':memory:';
 
 /**
@@ -28,6 +28,7 @@ export function resolveDatabasePath(): string {
  * existing database: it neither drops nor duplicates anything.
  */
 export function openDatabase(path: string = resolveDatabasePath()): Database {
+  // Only a real file needs a directory; an ephemeral database has no path.
   if (path !== EPHEMERAL_DATABASE) {
     mkdirSync(dirname(path), { recursive: true });
   }
@@ -59,7 +60,12 @@ export function openDatabase(path: string = resolveDatabasePath()): Database {
 export class DatabaseConnection implements OnModuleDestroy {
   readonly db: Database = openDatabase();
 
-  /** Releases the file so another instance can open it (app.close()). */
+  /**
+   * Releases the handle when the application is torn down in-process (app.close(),
+   * which the specs rely on). NOT a durability mechanism, and NOT reached on a real
+   * SIGINT/SIGTERM — main.ts does not enable Nest's shutdown hooks. Writes are
+   * already committed as each statement runs, so an abrupt kill loses nothing.
+   */
   onModuleDestroy(): void {
     this.db.close();
   }
