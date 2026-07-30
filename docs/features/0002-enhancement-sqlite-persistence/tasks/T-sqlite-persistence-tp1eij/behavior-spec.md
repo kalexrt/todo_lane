@@ -19,9 +19,9 @@
 - Then: `GET /api/tickets` on instance B returns 200 and contains exactly that ticket, with the same `id`, `title`, `description`, and `projectId`, and `status` equal to the literal string `todo`. (Fails before implementation: instance B starts from an empty in-memory array and returns `[]`.)
 
 ## B-2: a project created over the API is still there for a new instance against the same file  (AC-2, second write path)
-- Given:
-- When:
-- Then:
+- Given: `TRACKER_DB_PATH` points at a unique, empty temp directory path with no existing database file, and instance A is built from `AppModule` wired as `main.ts` does.
+- When: `POST /api/projects` with a `name` and `key` returns 201 with a server-assigned id; then instance A is closed; then a separate instance B is built against that same path.
+- Then: `GET /api/projects` on instance B returns 200 and contains the created project with the same `id`, `name`, and `key` — and the default project appears exactly once alongside it, for two projects in total. (Fails before implementation: `ProjectsService` still holds an in-memory array, so instance B returns only its freshly-seeded default project.)
 
 ## B-3: a status change made through `PATCH /api/tickets/:id/status` survives into a new instance  (AC-2, third write path)
 - Given:
