@@ -8,25 +8,31 @@
 > them). B-numbering is the Coordinator's, not fixed by AC count. Invariant /
 > non-functional ACs are not RED→GREEN cycles — any are listed in their own section.
 
-## B-1 (tracer bullet): AC-1 [behavior]: Every existing API behavior is unchanged — `GET /api/projects`, `POST /api/projects`, `GET /api/tickets` (with and without `?projectId=`), `POST /api/tickets`, and `PATCH /api/tickets/:id/status` return the same shapes and status codes as before, including every error case: 400 on missing/empty/whitespace title, 400 on unknown `projectId`, 400 on a status outside `todo | in_progress | done`, 400 on a project missing `name` or `key`, 404 on an unknown ticket id.
+> Renumbered from the scaffold to match the approved exec plan. AC-2 is the only drivable
+> behavior AC and it bundles three distinct write paths, so it splits into B-1/B-2/B-3
+> (one per path). AC-1 is carried by the existing suite, AC-3/AC-4 hold by construction
+> and are locked as off-ledger guards, and AC-5 is manual smoke — all in the section below.
+
+## B-1 (tracer bullet): a ticket created over the API is still there for a new application instance opened against the same database file  (AC-2, first write path)
+- Given: `TRACKER_DB_PATH` points at a unique, empty temp directory path with no existing database file, and a Nest application instance A is built from `AppModule` with the `/api` prefix and the same global `ValidationPipe` as `main.ts`.
+- When: `POST /api/tickets` with a title and description returns 201 with a server-assigned id; then instance A is closed; then a *separate* instance B is built from `AppModule` against that same `TRACKER_DB_PATH`.
+- Then: `GET /api/tickets` on instance B returns 200 and contains exactly that ticket, with the same `id`, `title`, `description`, and `projectId`, and `status` equal to the literal string `todo`. (Fails before implementation: instance B starts from an empty in-memory array and returns `[]`.)
+
+## B-2: a project created over the API is still there for a new instance against the same file  (AC-2, second write path)
 - Given:
 - When:
 - Then:
 
-## B-2: AC-2 [behavior]: Data written through the API is readable by a *different* application instance opened against the same storage location — create a project and a ticket, move the ticket to `in_progress`, tear the app down, build a new one against the same location, and `GET /api/projects` / `GET /api/tickets` return them with every field intact and the status still `in_progress`.
+## B-3: a status change made through `PATCH /api/tickets/:id/status` survives into a new instance  (AC-2, third write path)
 - Given:
 - When:
 - Then:
 
-## B-3: AC-5 [e2e]: Through the running app: create a ticket in the browser, move it to In Progress, stop and restart the backend process, reload the frontend — the ticket is still on the board, still in In Progress, and the default project still appears exactly once.
-- Given:
-- When:
-- Then:
-
-## Invariants & non-functional ACs (NOT RED→GREEN cycles)
+## Invariants, guards & smoke (NOT RED→GREEN cycles)
 > Not standalone behaviors to drive. An invariant usually holds as a property of a
 > behavior above (state which) or is locked by a guard test recorded off-ledger with
 > `lane red --regression`. Non-functional ACs are validated out-of-band (load test, etc.).
-- AC-3 [invariant]: A rejected request writes nothing — after each 400/404 case in AC-1, a subsequent read from a newly-opened instance shows no partial or orphan record, and in the invalid-status case the target ticket's stored status is unchanged. — coverage:
-- AC-4 [invariant]: The default project exists exactly once no matter how many times the backend boots against the same storage — repeated boots neither duplicate it nor reset a project the user created or changed. Booting against a location with no existing database succeeds and creates it (fresh checkout boots clean). — coverage:
-
+- AC-1 [behavior] — Every existing API behavior is unchanged (all endpoints, all error cases). — coverage: **the existing backend endpoint suite in `backend/src/**/*.spec.ts`, unedited.** It already asserts the whole surface and is already green, so a new test for it would pass at RED and `lane red` would rightly refuse it. Enforced by every `lane green` run and by `lane review`'s full-suite run. If any existing spec needs editing to pass, that is a contract break to escalate, not a test to fix.
+- AC-3 [invariant] — A rejected request writes nothing. — coverage: property of B-1/B-2/B-3's write paths (DTO/`ValidationPipe` rejection happens before the service is entered; `createValidated`'s unknown-`projectId` check and `updateStatus`'s unknown-id 404 both precede any write statement). Locked by a guard test committed with `lane red --regression`: each 400/404 case followed by a read from a newly-opened instance showing nothing written, and the target ticket's stored status unchanged in the invalid-status case.
+- AC-4 [invariant] — The default project exists exactly once across any number of boots, and a boot against a location with no database succeeds. — coverage: holds by construction from B-1's schema bootstrap (`CREATE TABLE IF NOT EXISTS` + insert-if-absent, never insert-or-replace) — B-1 cannot pass at all unless reopening an existing database works. Locked by a guard test committed with `lane red --regression`: three consecutive instances against one file yield exactly one default project, and a project the user created or changed is untouched by the later boots.
+- AC-5 [e2e] — Browser create → In Progress → real backend process restart → reload, ticket still present and still In Progress, default project still appears exactly once. — coverage: **manual smoke, recorded in `verification.md`.** Its automatable substance is B-1+B-2+B-3 at the same API seam the browser drives; what only a human can exercise is the real process kill/restart plus a browser reload against the real `backend/data/tracker.db`. Not a fourth ledger cycle — a Jest "B-4" here would either duplicate B-1..B-3 or assert a fake restart.

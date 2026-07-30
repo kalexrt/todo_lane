@@ -18,6 +18,9 @@ build
 coverage
 target
 
+# Local developer data — the SQLite database is created on boot, never committed (ADR-0002)
+backend/data
+
 # Environment / secrets (lane green refuses untracked secret files regardless)
 .env
 .env.*
