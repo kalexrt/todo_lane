@@ -10,10 +10,16 @@ export const EPHEMERAL_DATABASE = ':memory:';
  * Where the database lives. Read fresh on every call (never cached at module
  * load) so a test can point TRACKER_DB_PATH somewhere isolated before building
  * an application instance.
+ *
+ * The default resolves against this file's own location rather than the working
+ * directory, so it always lands inside the backend package (backend/data/) —
+ * whether started via ts-node from src/ or as compiled output from dist/.
  */
 export function resolveDatabasePath(): string {
   const configured = process.env.TRACKER_DB_PATH?.trim();
-  return configured ? configured : join(process.cwd(), 'data', 'tracker.db');
+  return configured
+    ? configured
+    : join(__dirname, '..', '..', 'data', 'tracker.db');
 }
 
 /**

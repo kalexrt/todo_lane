@@ -4,7 +4,11 @@ approved_at: "2026-07-30"
 # planned_behaviors — machine-read count of RED→GREEN cycles (B-N). Leave empty to let
 # lane infer from B-N labels below; SET it when an AC becomes a regression guard so
 # `lane next` knows the remaining count (frontmatter edits need no re-approval).
-planned_behaviors: "3"
+# Dropped 3 → 2 during execution: B-3 (status-change persistence) passes on arrival once B-1
+# replaces the in-memory array, so it is recorded as a regression guard instead of a fake RED.
+# The body below still reads "3" — body edits would reopen the approval gate, so it is left as
+# approved and the change is recorded in verification.md.
+planned_behaviors: "2"
 approved_sha256: "16e9cd22f5abea230102396664118a0ec5a9c0564befabdf4f3e1d79c218a882"
 ---
 ## Exec Plan — Task T-sqlite-persistence-tp1eij
