@@ -1,3 +1,8 @@
+---
+approved_by: "Kalash Shrestha"
+approved_at: "2026-08-24"
+approved_sha256: "92505041f88254ff918bda4cb51917c4521a724193e20ee9c2d56ef2d4e50bbf"
+---
 ## Task T-subtask-completion-gating-nq450a — A parent cannot reach done until its subtasks are done
 **Parent:** story S-0004.02 · feature 0004-enhancement-subtask-completion-gating (docs/features/0004-enhancement-subtask-completion-gating-*/ — its PRD + TSD)
 **Slice:** a complete observable behavior end-to-end + tests (full vertical — a disconnected layer = smell)
