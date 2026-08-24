@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { fetchTickets, updateTicketStatus } from './api'
-import type { Ticket, TicketStatus } from './api'
+import { fetchProjects, fetchTickets, updateTicketStatus } from './api'
+import type { Project, Ticket, TicketStatus } from './api'
 import CreateTicketForm from './CreateTicketForm'
 import './App.css'
 
@@ -11,11 +11,29 @@ const COLUMNS: { status: TicketStatus; label: string }[] = [
 ]
 
 function App() {
+  const [projects, setProjects] = useState<Project[]>([])
+  const [activeProjectId, setActiveProjectId] = useState<string | undefined>(undefined)
   const [tickets, setTickets] = useState<Ticket[]>([])
 
-  const loadTickets = useCallback(() => {
-    fetchTickets().then(setTickets).catch(console.error)
+  // Load the board list once on mount. The first project is the default board —
+  // activate it in the same batch so the selector never renders an empty/undefined
+  // active board once the list has arrived.
+  useEffect(() => {
+    fetchProjects()
+      .then((loaded) => {
+        setProjects(loaded)
+        if (activeProjectId === undefined && loaded.length > 0) {
+          setActiveProjectId(loaded[0].id)
+        }
+      })
+      .catch(console.error)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const loadTickets = useCallback(() => {
+    if (activeProjectId === undefined) return
+    fetchTickets(activeProjectId).then(setTickets).catch(console.error)
+  }, [activeProjectId])
 
   useEffect(() => {
     loadTickets()
@@ -29,6 +47,22 @@ function App() {
   return (
     <main>
       <h1>Ticket Tracker</h1>
+      {projects.length > 0 && (
+        <div className="board-selector">
+          <label htmlFor="board-select">Board</label>
+          <select
+            id="board-select"
+            value={activeProjectId ?? ''}
+            onChange={(event) => setActiveProjectId(event.target.value)}
+          >
+            {projects.map((project) => (
+              <option key={project.id} value={project.id}>
+                {project.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <CreateTicketForm onCreated={loadTickets} />
       <div className="board">
         {COLUMNS.map(({ status, label }) => (

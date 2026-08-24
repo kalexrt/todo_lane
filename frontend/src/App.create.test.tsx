@@ -2,7 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
-import type { Ticket } from './api'
+import type { Project, Ticket } from './api'
+
+const DEFAULT_PROJECT: Project = { id: 'default', name: 'Default', key: 'DEF' }
 
 function stubApiForCreate() {
   const createdTicket: Ticket = {
@@ -16,7 +18,10 @@ function stubApiForCreate() {
 
   const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
     const url = typeof input === 'string' ? input : input.toString()
-    if (url === '/api/tickets' && (!init || init.method === undefined)) {
+    if (url === '/api/projects' && (!init || init.method === undefined)) {
+      return Promise.resolve({ ok: true, json: async () => [DEFAULT_PROJECT] })
+    }
+    if (url === '/api/tickets?projectId=default' && (!init || init.method === undefined)) {
       return Promise.resolve({ ok: true, json: async () => [...serverTickets] })
     }
     if (url === '/api/tickets' && init?.method === 'POST') {

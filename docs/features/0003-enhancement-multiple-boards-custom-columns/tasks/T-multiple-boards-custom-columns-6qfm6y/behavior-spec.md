@@ -9,9 +9,9 @@
 > non-functional ACs are not RED→GREEN cycles — any are listed in their own section.
 
 ## B-1 (tracer bullet): AC-1 [behavior]: The frontend lists every project as a board and lets the user select which board is active; the board view shows only the tickets belonging to the active project, fetched with `GET /api/tickets?projectId=`.
-- Given:
-- When:
-- Then:
+- Given: the stubbed API serves two projects — `default` ("Default") and `p2` ("Second") — and `GET /api/tickets?projectId=default` returns one ticket ("Default ticket", `todo`) while `GET /api/tickets?projectId=p2` returns a different ticket ("Second ticket", `todo`).
+- When: the app loads (no user interaction).
+- Then: the board selector lists both "Default" and "Second", "Default" is the active (selected) board, the app fetches `/api/tickets?projectId=default`, and the board renders "Default ticket" in To Do — "Second ticket" does not appear.
 
 ## B-2: AC-2 [behavior]: The user can create a new board (name + key) from the UI; after creation it appears in the board list, can be selected, and starts with no tickets, via the existing `POST /api/projects` endpoint.
 - Given:

@@ -10,8 +10,24 @@ export interface Ticket {
   status: TicketStatus
 }
 
-export async function fetchTickets(): Promise<Ticket[]> {
-  const res = await fetch('/api/tickets')
+export interface Project {
+  id: string
+  name: string
+  key: string
+}
+
+export async function fetchProjects(): Promise<Project[]> {
+  const res = await fetch('/api/projects')
+  if (!res.ok) {
+    throw new Error(`GET /api/projects failed: ${res.status}`)
+  }
+  return res.json() as Promise<Project[]>
+}
+
+export async function fetchTickets(projectId?: string): Promise<Ticket[]> {
+  const url =
+    projectId === undefined ? '/api/tickets' : `/api/tickets?projectId=${projectId}`
+  const res = await fetch(url)
   if (!res.ok) {
     throw new Error(`GET /api/tickets failed: ${res.status}`)
   }
