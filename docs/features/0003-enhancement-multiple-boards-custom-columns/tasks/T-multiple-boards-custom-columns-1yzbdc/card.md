@@ -1,11 +1,21 @@
-## Task T-multiple-boards-custom-columns-1yzbdc — <title>
-**Parent:** story S-0003-enhancement-multiple-boards-custom-columns.nn · feature 0003-enhancement-multiple-boards-custom-columns (docs/features/0003-enhancement-multiple-boards-custom-columns-*/ — its PRD + TSD)
-**Slice:** a complete observable behavior end-to-end + tests (full vertical — a disconnected layer = smell)
+---
+approved_by: "Kalash Shrestha"
+approved_at: "2026-08-24"
+approved_sha256: "977a5b3149d2dada682c6d93e355ce3eb65137afe8c39507c9c126c3513f9e1e"
+---
+## Task T-multiple-boards-custom-columns-1yzbdc — Customizable columns per board
+**Parent:** story S-0003.02 · feature 0003-enhancement-multiple-boards-custom-columns (docs/features/0003-enhancement-multiple-boards-custom-columns/ — its PRD + TSD)
+**Slice:** full vertical — each board (project) owns an ordered list of columns persisted in SQLite (ADR-0002, via `ProjectsService`/`TicketsService` only), the board view renders its columns dynamically, the user can add/rename/remove columns, and the status-change seam validates a ticket's status against its board's columns. **Authorizes and implements the CONSTITUTION convention-#1 break recorded in ADR-0003:** the fixed status union `'todo' | 'in_progress' | 'done'` becomes per-board column slugs; `TicketStatus` widens to `string`; the static DTO `@IsIn` check becomes a dynamic, board-aware domain rule in the service. Default board seeded `todo`/`in_progress`/`done` so prior tickets stay valid with no migration. Depends on T-multiple-boards-custom-columns-6qfm6y (the board view it customizes).
 **Acceptance criteria:** (tag each `behavior`/`invariant`/`non-functional`/`e2e`; behavior ACs = observable outcome through an interface — NO "calls X / saves to table Y / uses lib Z")
-- [ ] AC-1 [behavior]: <observable outcome through interface>
-**End-to-end AC:** AC-<n> [e2e] — reachable through the running app (required: green component/unit ≠ reachable)
-**Tests:** AC-1  ← ordered; first = tracer bullet
+- [ ] AC-1 [behavior]: `GET /api/projects` returns each project with its ordered `columns: [{ slug, label }, ...]` (array order = column order); the frontend board view renders the active board's columns dynamically (slug→label, in order) instead of the hardcoded To Do / In Progress / Done set.
+- [ ] AC-2 [behavior]: `PUT /api/projects/:id/columns` sets a board's full ordered column list from `[{ slug, label }, ...]` and returns the updated project; the UI lets the user add, rename (label), and remove columns by sending the desired array, and the board view updates to the new column set.
+- [ ] AC-3 [invariant]: A ticket's status is always one of its board's current columns — `PATCH /api/tickets/:id/status` rejects (400) a status that is not a column slug on the ticket's board, 404 for an unknown ticket id (404 before any write), and remains the only code path that mutates a ticket's status. Removing a column that still has a ticket in it is rejected (400, naming the slug, columns unchanged), so the invariant can never be violated.
+- [ ] AC-4 [behavior]: A newly created ticket lands in its board's first column (position 0); a column that has been removed is not offered as a move target for tickets on that board.
+- [ ] AC-5 [e2e]: Through the running app on a fresh board whose columns are `Backlog` / `Done`: create a ticket (it lands in `Backlog`), move it to `Done`, and reload the app — the board still shows its custom columns and the ticket is still in `Done`.
+- [ ] AC-6 [invariant]: The default project is seeded with the columns `todo` / `in_progress` / `done` (labels `To Do` / `In Progress` / `Done`) exactly once across repeated boots and is never reset; a newly created board is seeded with `todo` / `Done`; tickets created before this enhancement remain valid on upgrade (no orphaned statuses, no data migration).
+**End-to-end AC:** AC-5 [e2e] — reachable through the running app (browser + real backend + real database file, custom columns persisted across reload).
+**Tests:** AC-6, AC-1, AC-3, AC-4, AC-2, AC-5  ← ordered; first = tracer bullet (a project's columns round-trip through a fresh isolated database with the default board seeded `todo`/`in_progress`/`done` — proves real per-board column persistence before breadth). AC-3 is the convention-break's load-bearing invariant (status validated against the board's columns at the seam, the only mutation path). AC-5's browser walk is verified as smoke in the verification report; its persistence half is covered by AC-1/AC-6 at the API level.
 <!-- exception: Tests: N/A — reason: config | scaffolding | spike | refactor | tooling | integration -->
-**Test scope:** tests/T-multiple-boards-custom-columns-1yzbdc/   ← documentation: where this task's OWN tests live. Scope is NOT configured — red/green scope to the changed test files and `verify` derives it from the RED commits (ADR-0002); `review` runs the FULL suite. This line is a human pointer only.
+**Test scope:** backend/src/**/*.spec.ts (Jest + supertest, per-spec isolated database) AND frontend/src/**/*.test.tsx (Vitest + RTL) — plus the existing specs in both trees, which must stay green (the fixed-union tests that assume `'todo' | 'in_progress' | 'done'` are updated as part of this task's ledger, per ADR-0003).
 <!-- approval: written by `lane approve` as frontmatter (approved_by/at/sha256) after a human confirms — never hand-edit -->
 **Done =** reviewable PR, all tests pass, links to chain. One PR per task (default).
