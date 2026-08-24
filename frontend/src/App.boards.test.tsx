@@ -63,6 +63,7 @@ describe('multiple boards (T-multiple-boards-custom-columns-6qfm6y B-1)', () => 
     expect((boardSelect as HTMLSelectElement).value).toBe('default')
 
     // the active board's tickets are fetched with ?projectId= and rendered
+    await within(screen.getByRole('region', { name: 'To Do' })).findByText('Default ticket') // wait for the fetch to complete before asserting its URL — de-flakes an effect-timing race on the next line
     expect(fetchMock).toHaveBeenCalledWith('/api/tickets?projectId=default')
     const todo = screen.getByRole('region', { name: 'To Do' })
     expect(await within(todo).findByText('Default ticket')).toBeInTheDocument()
@@ -112,6 +113,11 @@ describe('create board (T-multiple-boards-custom-columns-6qfm6y B-2)', () => {
       '/api/projects',
       expect.objectContaining({ method: 'POST' }),
     )
+    // ...with the board's name and key in the body (the spec requires POST /api/projects with name+key)
+    const createCall = fetchMock.mock.calls.find(
+      ([url, init]) => url === '/api/projects' && init?.method === 'POST',
+    )
+    expect(createCall?.[1]?.body).toBe(JSON.stringify({ name: 'New Board', key: 'NEW' }))
     const select = await screen.findByRole('combobox', { name: /board/i })
     expect(within(select).getByRole('option', { name: 'New Board' })).toBeInTheDocument()
 
