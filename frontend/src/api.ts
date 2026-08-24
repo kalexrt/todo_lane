@@ -52,6 +52,7 @@ export async function fetchTickets(projectId?: string): Promise<Ticket[]> {
 export async function createTicket(data: {
   title: string
   description?: string
+  projectId?: string
 }): Promise<Ticket> {
   const res = await fetch('/api/tickets', {
     method: 'POST',

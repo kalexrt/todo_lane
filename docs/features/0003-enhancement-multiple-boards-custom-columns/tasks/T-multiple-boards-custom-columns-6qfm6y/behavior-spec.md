@@ -19,9 +19,9 @@
 - Then: the app POSTs `/api/projects` with `{ name: "New Board", key: "NEW" }`, the new board "New Board" appears in the board selector, selecting it sets it active, and its board starts with no tickets.
 
 ## B-3: AC-3 [behavior]: A ticket created while a board is active is created in that board's project (the create request carries the active `projectId`); switching to another board shows that board's tickets and not the first's, so each board keeps its own tickets.
-- Given:
-- When:
-- Then:
+- Given: the stubbed API serves two boards (`default` with one ticket "Default ticket", `p2` empty) and accepts `POST /api/tickets` with a `projectId`, storing the new ticket under that project.
+- When: the user switches to the `p2` ("Second") board and creates a ticket "Second board ticket", then switches back to `default`.
+- Then: the create request body contains `"projectId":"p2"` and the ticket appears on the Second board; switching back to Default shows "Default ticket" and not "Second board ticket".
 
 ## B-4: AC-4 [e2e]: Through the running app: create two boards, add a ticket to each, switch between them, and see only the relevant tickets in each board.
 - Given:

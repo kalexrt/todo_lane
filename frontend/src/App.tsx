@@ -92,7 +92,7 @@ function App() {
         />
         <button type="submit">Create board</button>
       </form>
-      <CreateTicketForm onCreated={loadTickets} />
+      <CreateTicketForm onCreated={loadTickets} projectId={activeProjectId} />
       <div className="board">
         {COLUMNS.map(({ status, label }) => (
           <section key={status} aria-label={label} className="column">
