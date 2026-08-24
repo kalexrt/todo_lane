@@ -14,9 +14,9 @@
 - Then: the board selector lists both "Default" and "Second", "Default" is the active (selected) board, the app fetches `/api/tickets?projectId=default`, and the board renders "Default ticket" in To Do — "Second ticket" does not appear.
 
 ## B-2: AC-2 [behavior]: The user can create a new board (name + key) from the UI; after creation it appears in the board list, can be selected, and starts with no tickets, via the existing `POST /api/projects` endpoint.
-- Given:
-- When:
-- Then:
+- Given: the stubbed API serves the default project, and `POST /api/projects` with `{ name, key }` returns a new project (`id: "p3"`, name "New Board", key "NEW") and adds it to the project list.
+- When: the user types "New Board" / "NEW" into the create-board form and submits it.
+- Then: the app POSTs `/api/projects` with `{ name: "New Board", key: "NEW" }`, the new board "New Board" appears in the board selector, selecting it sets it active, and its board starts with no tickets.
 
 ## B-3: AC-3 [behavior]: A ticket created while a board is active is created in that board's project (the create request carries the active `projectId`); switching to another board shows that board's tickets and not the first's, so each board keeps its own tickets.
 - Given:

@@ -24,6 +24,21 @@ export async function fetchProjects(): Promise<Project[]> {
   return res.json() as Promise<Project[]>
 }
 
+export async function createProject(data: {
+  name: string
+  key: string
+}): Promise<Project> {
+  const res = await fetch('/api/projects', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) {
+    throw new Error(`POST /api/projects failed: ${res.status}`)
+  }
+  return res.json() as Promise<Project>
+}
+
 export async function fetchTickets(projectId?: string): Promise<Ticket[]> {
   const url =
     projectId === undefined ? '/api/tickets' : `/api/tickets?projectId=${projectId}`

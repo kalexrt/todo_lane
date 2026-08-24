@@ -52,7 +52,7 @@ describe('create ticket form (T-003 B-4)', () => {
 
     await user.type(titleInput, 'Write the create form')
     await user.type(descriptionInput, 'drive it via TDD')
-    await user.click(screen.getByRole('button', { name: /create/i }))
+    await user.click(screen.getByRole('button', { name: /create ticket/i }))
 
     const todo = screen.getByRole('region', { name: 'To Do' })
     expect(

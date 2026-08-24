@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { fetchProjects, fetchTickets, updateTicketStatus } from './api'
+import type { FormEvent } from 'react'
+import { createProject, fetchProjects, fetchTickets, updateTicketStatus } from './api'
 import type { Project, Ticket, TicketStatus } from './api'
 import CreateTicketForm from './CreateTicketForm'
 import './App.css'
@@ -14,21 +15,24 @@ function App() {
   const [projects, setProjects] = useState<Project[]>([])
   const [activeProjectId, setActiveProjectId] = useState<string | undefined>(undefined)
   const [tickets, setTickets] = useState<Ticket[]>([])
+  const [boardName, setBoardName] = useState('')
+  const [boardKey, setBoardKey] = useState('')
 
-  // Load the board list once on mount. The first project is the default board —
-  // activate it in the same batch so the selector never renders an empty/undefined
-  // active board once the list has arrived.
-  useEffect(() => {
+  // Load the board list. The first project is the default board — activate it
+  // once, in the same batch, so the selector never renders an undefined active
+  // board once the list has arrived.
+  const loadProjects = useCallback(() => {
     fetchProjects()
       .then((loaded) => {
         setProjects(loaded)
-        if (activeProjectId === undefined && loaded.length > 0) {
-          setActiveProjectId(loaded[0].id)
-        }
+        setActiveProjectId((current) => current ?? loaded[0]?.id)
       })
       .catch(console.error)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    loadProjects()
+  }, [loadProjects])
 
   const loadTickets = useCallback(() => {
     if (activeProjectId === undefined) return
@@ -42,6 +46,14 @@ function App() {
   async function moveTicket(id: string, status: TicketStatus) {
     await updateTicketStatus(id, status)
     loadTickets()
+  }
+
+  async function createBoard(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    await createProject({ name: boardName, key: boardKey })
+    setBoardName('')
+    setBoardKey('')
+    loadProjects()
   }
 
   return (
@@ -63,6 +75,23 @@ function App() {
           </select>
         </div>
       )}
+      <form className="create-board-form" onSubmit={createBoard}>
+        <label htmlFor="board-name">Board name</label>
+        <input
+          id="board-name"
+          value={boardName}
+          onChange={(event) => setBoardName(event.target.value)}
+          required
+        />
+        <label htmlFor="board-key">Board key</label>
+        <input
+          id="board-key"
+          value={boardKey}
+          onChange={(event) => setBoardKey(event.target.value)}
+          required
+        />
+        <button type="submit">Create board</button>
+      </form>
       <CreateTicketForm onCreated={loadTickets} />
       <div className="board">
         {COLUMNS.map(({ status, label }) => (
