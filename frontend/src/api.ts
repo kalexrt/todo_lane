@@ -10,8 +10,39 @@ export interface Ticket {
   status: TicketStatus
 }
 
-export async function fetchTickets(): Promise<Ticket[]> {
-  const res = await fetch('/api/tickets')
+export interface Project {
+  id: string
+  name: string
+  key: string
+}
+
+export async function fetchProjects(): Promise<Project[]> {
+  const res = await fetch('/api/projects')
+  if (!res.ok) {
+    throw new Error(`GET /api/projects failed: ${res.status}`)
+  }
+  return res.json() as Promise<Project[]>
+}
+
+export async function createProject(data: {
+  name: string
+  key: string
+}): Promise<Project> {
+  const res = await fetch('/api/projects', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) {
+    throw new Error(`POST /api/projects failed: ${res.status}`)
+  }
+  return res.json() as Promise<Project>
+}
+
+export async function fetchTickets(projectId?: string): Promise<Ticket[]> {
+  const url =
+    projectId === undefined ? '/api/tickets' : `/api/tickets?projectId=${projectId}`
+  const res = await fetch(url)
   if (!res.ok) {
     throw new Error(`GET /api/tickets failed: ${res.status}`)
   }
@@ -21,6 +52,7 @@ export async function fetchTickets(): Promise<Ticket[]> {
 export async function createTicket(data: {
   title: string
   description?: string
+  projectId?: string
 }): Promise<Ticket> {
   const res = await fetch('/api/tickets', {
     method: 'POST',

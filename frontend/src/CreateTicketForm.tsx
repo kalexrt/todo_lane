@@ -4,15 +4,16 @@ import { createTicket } from './api'
 
 interface CreateTicketFormProps {
   onCreated: () => void
+  projectId?: string
 }
 
-function CreateTicketForm({ onCreated }: CreateTicketFormProps) {
+function CreateTicketForm({ onCreated, projectId }: CreateTicketFormProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    await createTicket({ title, description })
+    await createTicket({ title, description, projectId })
     setTitle('')
     setDescription('')
     onCreated()
