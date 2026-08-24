@@ -1,0 +1,30 @@
+# Behavior Spec — T-multiple-boards-custom-columns-6qfm6y: Multiple boards (one per project)
+> Source: task card ACs + docs/features/0003-enhancement-multiple-boards-custom-columns/tasks/T-multiple-boards-custom-columns-6qfm6y/snapshot-TSD.md
+> One test at a time. B-1 = tracer bullet. Never write B-N+1 before B-N is GREEN.
+> Fill a behavior's Given/When/Then JUST BEFORE you `lane red` it — `lane red` checks
+> only the behavior it's about to prove, so later B-N may stay stubs until their turn.
+> B-N below seed from the card's drivable ACs (behavior / e2e) — a starting point, not
+> final. One AC may be several behaviors (split it); the Critic may surface more (add
+> them). B-numbering is the Coordinator's, not fixed by AC count. Invariant /
+> non-functional ACs are not RED→GREEN cycles — any are listed in their own section.
+
+## B-1 (tracer bullet): AC-1 [behavior]: The frontend lists every project as a board and lets the user select which board is active; the board view shows only the tickets belonging to the active project, fetched with `GET /api/tickets?projectId=`.
+- Given:
+- When:
+- Then:
+
+## B-2: AC-2 [behavior]: The user can create a new board (name + key) from the UI; after creation it appears in the board list, can be selected, and starts with no tickets, via the existing `POST /api/projects` endpoint.
+- Given:
+- When:
+- Then:
+
+## B-3: AC-3 [behavior]: A ticket created while a board is active is created in that board's project (the create request carries the active `projectId`); switching to another board shows that board's tickets and not the first's, so each board keeps its own tickets.
+- Given:
+- When:
+- Then:
+
+## B-4: AC-4 [e2e]: Through the running app: create two boards, add a ticket to each, switch between them, and see only the relevant tickets in each board.
+- Given:
+- When:
+- Then:
+
