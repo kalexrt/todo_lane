@@ -1,3 +1,8 @@
+---
+approved_by: "Kalash Shrestha"
+approved_at: "2026-08-24"
+approved_sha256: "61405a58930fc59b79b12b3e2fb82de77078ac2d18dd784d6568cb882afa771c"
+---
 ## Task T-subtask-completion-gating-l9qjli — A ticket can have subtasks
 **Parent:** story S-0004.01 · feature 0004-enhancement-subtask-completion-gating (docs/features/0004-enhancement-subtask-completion-gating-*/ — its PRD + TSD)
 **Slice:** a complete observable behavior end-to-end + tests (full vertical — a disconnected layer = smell)
