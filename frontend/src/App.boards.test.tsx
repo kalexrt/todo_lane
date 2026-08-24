@@ -122,3 +122,86 @@ describe('create board (T-multiple-boards-custom-columns-6qfm6y B-2)', () => {
     expect(within(todo).queryAllByRole('listitem')).toHaveLength(0)
   })
 })
+
+describe('create ticket in the active board (T-multiple-boards-custom-columns-6qfm6y B-3)', () => {
+  beforeEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('creates a ticket in the active board’s project, and switching boards shows only that board’s tickets', async () => {
+    const user = userEvent.setup()
+    const projects: Project[] = [DEFAULT_PROJECT, SECOND_PROJECT]
+    const ticketsByProject: Record<string, Ticket[]> = {
+      default: [
+        { id: 't1', projectId: 'default', title: 'Default ticket', description: '', status: 'todo' },
+      ],
+      p2: [],
+    }
+
+    const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = typeof input === 'string' ? input : input.toString()
+      if (url === '/api/projects' && (!init || init.method === undefined)) {
+        return Promise.resolve({ ok: true, json: async () => projects.map((p) => ({ ...p })) })
+      }
+      if (url === '/api/tickets' && init?.method === 'POST') {
+        const body = JSON.parse(init.body as string) as {
+          title: string
+          description?: string
+          projectId?: string
+        }
+        const projectId = body.projectId ?? 'default'
+        const created: Ticket = {
+          id: 'new-ticket',
+          projectId,
+          title: body.title,
+          description: body.description ?? '',
+          status: 'todo',
+        }
+        ticketsByProject[projectId] = [...(ticketsByProject[projectId] ?? []), created]
+        return Promise.resolve({ ok: true, json: async () => ({ ...created }) })
+      }
+      const ticketMatch = url.match(/^\/api\/tickets(?:\?projectId=(.+))?$/)
+      if (ticketMatch && (!init || init.method === undefined)) {
+        const projectId = ticketMatch[1] ?? 'default'
+        return Promise.resolve({
+          ok: true,
+          json: async () => (ticketsByProject[projectId] ?? []).map((t) => ({ ...t })),
+        })
+      }
+      return Promise.reject(new Error(`unexpected fetch: ${url}`))
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    render(<App />)
+    await screen.findByRole('combobox', { name: /board/i })
+
+    // switch to the Second board and create a ticket there
+    const select = screen.getByRole('combobox', { name: /board/i })
+    await user.selectOptions(select, 'p2')
+    await user.type(screen.getByLabelText('Title'), 'Second board ticket')
+    await user.click(screen.getByRole('button', { name: /create ticket/i }))
+
+    // the create request carries the active board's projectId, and the ticket lands on Second
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/tickets',
+      expect.objectContaining({
+        method: 'POST',
+        body: expect.stringContaining('"projectId":"p2"'),
+      }),
+    )
+    const secondTodo = screen.getByRole('region', { name: 'To Do' })
+    expect(
+      await within(secondTodo).findByText('Second board ticket'),
+    ).toBeInTheDocument()
+
+    // switching back to Default shows only Default's tickets — not the Second-board ticket
+    await user.selectOptions(select, 'default')
+    const defaultTodo = await screen.findByRole('region', { name: 'To Do' })
+    expect(
+      await within(defaultTodo).findByText('Default ticket'),
+    ).toBeInTheDocument()
+    expect(
+      within(defaultTodo).queryByText('Second board ticket'),
+    ).not.toBeInTheDocument()
+  })
+})
