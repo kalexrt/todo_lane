@@ -94,3 +94,38 @@ describe('theme toggle interaction (T-light-mode-theme-1n8w9z B-2)', () => {
     ).toBeInTheDocument()
   })
 })
+
+describe('theme persistence across mounts (T-light-mode-theme-1n8w9z B-3)', () => {
+  beforeEach(() => {
+    vi.unstubAllGlobals()
+    localStorage.clear()
+    stubTicketsApi()
+  })
+
+  afterEach(() => {
+    document.documentElement.removeAttribute('data-theme')
+  })
+
+  it('persists the flipped theme to localStorage and a stored value wins over the OS preference on the next mount', async () => {
+    stubMatchMedia(true)
+    const user = userEvent.setup()
+
+    const { unmount } = render(<App />)
+
+    await screen.findByRole('region', { name: 'To Do' })
+    await user.click(screen.getByRole('button', { name: /switch to light/i }))
+
+    expect(localStorage.getItem('theme')).toBe('light')
+
+    unmount()
+    document.documentElement.removeAttribute('data-theme')
+
+    render(<App />)
+
+    await screen.findByRole('region', { name: 'To Do' })
+    expect(document.documentElement.getAttribute('data-theme')).toBe('light')
+    expect(
+      screen.getByRole('button', { name: /switch to dark/i }),
+    ).toBeInTheDocument()
+  })
+})
