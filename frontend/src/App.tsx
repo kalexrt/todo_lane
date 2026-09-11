@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { fetchTickets, updateTicketStatus } from './api'
 import type { Ticket, TicketStatus } from './api'
 import CreateTicketForm from './CreateTicketForm'
+import { otherTheme, resolveInitialTheme } from './theme'
 import './App.css'
 
 const COLUMNS: { status: TicketStatus; label: string }[] = [
@@ -12,6 +13,11 @@ const COLUMNS: { status: TicketStatus; label: string }[] = [
 
 function App() {
   const [tickets, setTickets] = useState<Ticket[]>([])
+  const [theme] = useState(resolveInitialTheme)
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+  }, [theme])
 
   const loadTickets = useCallback(() => {
     fetchTickets().then(setTickets).catch(console.error)
@@ -28,7 +34,16 @@ function App() {
 
   return (
     <main>
-      <h1>Ticket Tracker</h1>
+      <div className="page-header">
+        <h1>Ticket Tracker</h1>
+        <button
+          type="button"
+          className="theme-toggle"
+          aria-label={`Switch to ${otherTheme(theme)} theme`}
+        >
+          {otherTheme(theme) === 'dark' ? '🌙' : '☀️'}
+        </button>
+      </div>
       <CreateTicketForm onCreated={loadTickets} />
       <div className="board">
         {COLUMNS.map(({ status, label }) => (

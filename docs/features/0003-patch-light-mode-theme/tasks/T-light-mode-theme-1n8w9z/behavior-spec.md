@@ -9,9 +9,9 @@
 > non-functional ACs are not RED→GREEN cycles — any are listed in their own section.
 
 ## B-1 (tracer bullet): AC-1 [behavior]: With nothing stored under the `theme` key, the app resolves the
-- Given:
-- When:
-- Then:
+- Given: no value stored under `localStorage['theme']`
+- When: the app mounts, once with `matchMedia('(prefers-color-scheme: dark)')` matching, once with it not matching
+- Then: `document.documentElement` carries `data-theme="dark"` (matching case) or `data-theme="light"` (non-matching case), and the rendered toggle control's accessible name identifies the OPPOSITE theme it would switch to
 
 ## B-2: AC-2 [behavior]: Activating the theme control flips the active theme, updating
 - Given:
