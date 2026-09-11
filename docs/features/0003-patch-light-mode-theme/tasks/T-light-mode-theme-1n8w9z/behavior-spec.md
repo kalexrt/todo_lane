@@ -27,5 +27,5 @@
 > Not standalone behaviors to drive. An invariant usually holds as a property of a
 > behavior above (state which) or is locked by a guard test recorded off-ledger with
 > `lane red --regression`. Non-functional ACs are validated out-of-band (load test, etc.).
-- AC-4 [invariant]: `:root` carries the light tokens with no media query or attribute — coverage:
+- AC-4 [invariant]: `:root` carries the light tokens with no media query or attribute — coverage: not automated (TSD's Tests row excludes colour-value assertions); verified by static inspection of `frontend/src/index.css` — the base `:root { ... }` block (no selector qualifier) holds the light values unconditionally, with dark applied only via `:root[data-theme='dark']` or the `:not([data-theme])` media fallback. See verification.md.
 
