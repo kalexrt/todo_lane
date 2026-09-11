@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { fetchTickets, updateTicketStatus } from './api'
 import type { Ticket, TicketStatus } from './api'
 import CreateTicketForm from './CreateTicketForm'
-import { otherTheme, resolveInitialTheme } from './theme'
+import { otherTheme, resolveInitialTheme, setStoredTheme } from './theme'
 import './App.css'
 
 const COLUMNS: { status: TicketStatus; label: string }[] = [
@@ -40,7 +40,13 @@ function App() {
           type="button"
           className="theme-toggle"
           aria-label={`Switch to ${otherTheme(theme)} theme`}
-          onClick={() => setTheme(otherTheme)}
+          onClick={() =>
+            setTheme((current) => {
+              const next = otherTheme(current)
+              setStoredTheme(next)
+              return next
+            })
+          }
         >
           {otherTheme(theme) === 'dark' ? '🌙' : '☀️'}
         </button>

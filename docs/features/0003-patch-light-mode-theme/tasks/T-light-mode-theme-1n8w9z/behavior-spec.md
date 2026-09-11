@@ -19,9 +19,9 @@
 - Then: after the first click, `document.documentElement` carries `data-theme="light"` and the control's accessible name reads "Switch to dark"; after the second click, it returns to `data-theme="dark"` and "Switch to light"
 
 ## B-3: AC-3 [behavior]: Activating the control writes the newly selected theme to
-- Given:
-- When:
-- Then:
+- Given: the app has mounted with no stored preference and the OS prefers dark (`data-theme="dark"`)
+- When: the toggle control is clicked once (flipping to light), then a fresh `App` instance mounts (simulating reload) while the OS still prefers dark
+- Then: after the click, `localStorage['theme']` is `'light'`; on the fresh mount, `data-theme` resolves to `'light'` (the stored value, not the OS preference) and the control reads "Switch to dark"
 
 ## Invariants & non-functional ACs (NOT RED→GREEN cycles)
 > Not standalone behaviors to drive. An invariant usually holds as a property of a
