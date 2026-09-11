@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import App from './App'
 import type { Ticket } from './api'
 
@@ -54,6 +55,42 @@ describe('theme resolution on mount (T-light-mode-theme-1n8w9z B-1)', () => {
     expect(document.documentElement.getAttribute('data-theme')).toBe('light')
     expect(
       screen.getByRole('button', { name: /switch to dark/i }),
+    ).toBeInTheDocument()
+  })
+})
+
+describe('theme toggle interaction (T-light-mode-theme-1n8w9z B-2)', () => {
+  beforeEach(() => {
+    vi.unstubAllGlobals()
+    localStorage.clear()
+    stubTicketsApi()
+  })
+
+  afterEach(() => {
+    document.documentElement.removeAttribute('data-theme')
+  })
+
+  it('flips the active theme on click and flips back on a second click', async () => {
+    stubMatchMedia(true)
+    const user = userEvent.setup()
+
+    render(<App />)
+
+    await screen.findByRole('region', { name: 'To Do' })
+    expect(document.documentElement.getAttribute('data-theme')).toBe('dark')
+
+    await user.click(screen.getByRole('button', { name: /switch to light/i }))
+
+    expect(document.documentElement.getAttribute('data-theme')).toBe('light')
+    expect(
+      screen.getByRole('button', { name: /switch to dark/i }),
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /switch to dark/i }))
+
+    expect(document.documentElement.getAttribute('data-theme')).toBe('dark')
+    expect(
+      screen.getByRole('button', { name: /switch to light/i }),
     ).toBeInTheDocument()
   })
 })
