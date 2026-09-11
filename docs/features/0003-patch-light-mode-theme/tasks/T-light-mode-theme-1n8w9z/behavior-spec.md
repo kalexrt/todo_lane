@@ -14,9 +14,9 @@
 - Then: `document.documentElement` carries `data-theme="dark"` (matching case) or `data-theme="light"` (non-matching case), and the rendered toggle control's accessible name identifies the OPPOSITE theme it would switch to
 
 ## B-2: AC-2 [behavior]: Activating the theme control flips the active theme, updating
-- Given:
-- When:
-- Then:
+- Given: the app has mounted and resolved an initial theme (OS prefers dark, so `data-theme="dark"` and the control reads "Switch to light")
+- When: the toggle control is clicked once, then clicked again
+- Then: after the first click, `document.documentElement` carries `data-theme="light"` and the control's accessible name reads "Switch to dark"; after the second click, it returns to `data-theme="dark"` and "Switch to light"
 
 ## B-3: AC-3 [behavior]: Activating the control writes the newly selected theme to
 - Given:

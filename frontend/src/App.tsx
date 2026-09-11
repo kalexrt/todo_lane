@@ -13,7 +13,7 @@ const COLUMNS: { status: TicketStatus; label: string }[] = [
 
 function App() {
   const [tickets, setTickets] = useState<Ticket[]>([])
-  const [theme] = useState(resolveInitialTheme)
+  const [theme, setTheme] = useState(resolveInitialTheme)
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -40,6 +40,7 @@ function App() {
           type="button"
           className="theme-toggle"
           aria-label={`Switch to ${otherTheme(theme)} theme`}
+          onClick={() => setTheme(otherTheme)}
         >
           {otherTheme(theme) === 'dark' ? '🌙' : '☀️'}
         </button>
