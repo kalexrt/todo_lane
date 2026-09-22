@@ -79,3 +79,29 @@ describe('drag a ticket onto a column (T-drag-ticket-between-columns-wx3fbc B-1)
     expect(statusCalls).toEqual([{ id: 't1', status: 'done' }])
   })
 })
+
+describe('drop a ticket on the column it already occupies (T-drag-ticket-between-columns-wx3fbc B-2)', () => {
+  beforeEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('issues no status change and leaves the card where it is', async () => {
+    const statusCalls = stubStatefulApi([
+      { id: 't1', projectId: 'default', title: 'Stationary ticket', description: '', status: 'todo' },
+    ])
+
+    render(<App />)
+
+    const todo = await screen.findByRole('region', { name: 'To Do' })
+    await within(todo).findByText('Stationary ticket')
+
+    const dataTransfer = makeDataTransfer()
+
+    fireEvent.dragStart(cardFor('Stationary ticket'), { dataTransfer })
+    fireEvent.dragOver(todo, { dataTransfer })
+    fireEvent.drop(todo, { dataTransfer })
+
+    expect(statusCalls).toEqual([])
+    expect(within(todo).getByText('Stationary ticket')).toBeInTheDocument()
+  })
+})
