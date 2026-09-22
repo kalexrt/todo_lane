@@ -1,9 +1,0 @@
-{
-  "provisionedAt": "2026-09-11T05:00:43.972Z",
-  "provisionedSha": "a74ab9f77ced9682f5599f87cb064d68d73ab26a",
-  "setupCmd": "",
-  "runnerSetupCmds": [
-    "npm ci",
-    "npm ci"
-  ]
-}

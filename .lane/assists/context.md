@@ -37,4 +37,4 @@ Honesty rules — these docs are human-owned, you only draft:
 When the drafts are written, re-run `lane fold status` to confirm the targets now read
 `filled`, then report: what you filled (with file paths), what is inferred vs. confirmed, and
 the open questions only a human can answer. Say exactly:
-"hydration drafted — review the docs, then: lane approve (or open a PR)."
+"hydration drafted — review docs/context/, then run: lane"
