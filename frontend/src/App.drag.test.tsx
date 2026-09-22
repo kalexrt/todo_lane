@@ -105,3 +105,34 @@ describe('drop a ticket on the column it already occupies (T-drag-ticket-between
     expect(within(todo).getByText('Stationary ticket')).toBeInTheDocument()
   })
 })
+
+describe('highlight survives the pointer crossing a column child (T-drag-ticket-between-columns-wx3fbc B-3)', () => {
+  beforeEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('keeps the column highlighted when the drag moves onto an element inside it', async () => {
+    stubStatefulApi([
+      { id: 't1', projectId: 'default', title: 'Hovering ticket', description: '', status: 'todo' },
+    ])
+
+    render(<App />)
+
+    const todo = await screen.findByRole('region', { name: 'To Do' })
+    await within(todo).findByText('Hovering ticket')
+
+    const done = screen.getByRole('region', { name: 'Done' })
+    const dataTransfer = makeDataTransfer()
+
+    fireEvent.dragStart(cardFor('Hovering ticket'), { dataTransfer })
+    fireEvent.dragOver(done, { dataTransfer })
+    expect(done).toHaveClass('drop-target')
+
+    // dragleave bubbles: moving onto the column's own heading fires it on the
+    // section. The highlight must not drop out while the pointer is still inside.
+    const heading = within(done).getByRole('heading', { name: 'Done' })
+    fireEvent.dragLeave(done, { dataTransfer, relatedTarget: heading })
+
+    expect(done).toHaveClass('drop-target')
+  })
+})
