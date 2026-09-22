@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { DragEvent } from 'react'
 import { fetchTickets, updateTicketStatus } from './api'
 import type { Ticket, TicketStatus } from './api'
@@ -18,6 +18,10 @@ function App() {
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [theme, setTheme] = useState(resolveInitialTheme)
   const [dropTarget, setDropTarget] = useState<TicketStatus | null>(null)
+  // dragenter/dragleave both bubble, so a column sees them for its own children
+  // too. Counting the pairs is what distinguishes "moved onto my heading" from
+  // "actually left me" — relatedTarget is not reliable across browsers.
+  const dragDepth = useRef<Record<string, number>>({})
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -36,9 +40,14 @@ function App() {
     loadTickets()
   }
 
+  function clearDrag() {
+    dragDepth.current = {}
+    setDropTarget(null)
+  }
+
   function handleDrop(event: DragEvent, status: TicketStatus) {
     event.preventDefault()
-    setDropTarget(null)
+    clearDrag()
     const id = event.dataTransfer.getData(DRAG_FORMAT)
     if (!id) return
     const dropped = tickets.find((ticket) => ticket.id === id)
@@ -73,11 +82,21 @@ function App() {
             key={status}
             aria-label={label}
             className={dropTarget === status ? 'column drop-target' : 'column'}
+            onDragEnter={(event) => {
+              event.preventDefault()
+              dragDepth.current[status] = (dragDepth.current[status] ?? 0) + 1
+              setDropTarget(status)
+            }}
             onDragOver={(event) => {
               event.preventDefault()
               setDropTarget(status)
             }}
-            onDragLeave={() => setDropTarget(null)}
+            onDragLeave={() => {
+              const depth = (dragDepth.current[status] ?? 0) - 1
+              dragDepth.current[status] = Math.max(depth, 0)
+              if (depth > 0) return
+              setDropTarget((current) => (current === status ? null : current))
+            }}
             onDrop={(event) => handleDrop(event, status)}
           >
             <h2>{label}</h2>
@@ -92,7 +111,7 @@ function App() {
                     onDragStart={(event) =>
                       event.dataTransfer.setData(DRAG_FORMAT, ticket.id)
                     }
-                    onDragEnd={() => setDropTarget(null)}
+                    onDragEnd={clearDrag}
                   >
                     <strong>{ticket.title}</strong>
                     {ticket.description && <p>{ticket.description}</p>}

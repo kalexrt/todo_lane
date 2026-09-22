@@ -18,6 +18,11 @@
 - When: the user picks up that card and releases it over the "To Do" column — the column it already occupies.
 - Then: no status change is requested at all, and the card is still rendered inside the "To Do" column.
 
+## B-3: TSD Behavior clause — "a column under an active drag is visually distinguishable from the others WHILE THE POINTER IS OVER IT". Surfaced by the Critic (flag 4): dragleave bubbles, so crossing the column's own children clears the highlight.
+- Given: the board is rendered, a card is being dragged, and the pointer has moved over the "Done" column so that column is highlighted as the drop target.
+- When: the drag moves onto an element nested inside that same column (its "Done" heading) rather than out of the column.
+- Then: the "Done" column stays highlighted — the indication is cleared only when the drag genuinely leaves the column or ends.
+
 ## Invariants & non-functional ACs (NOT RED→GREEN cycles)
 > Not standalone behaviors to drive. An invariant usually holds as a property of a
 > behavior above (state which) or is locked by a guard test recorded off-ledger with
