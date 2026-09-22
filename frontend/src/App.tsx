@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import type { DragEvent } from 'react'
 import { fetchTickets, updateTicketStatus } from './api'
 import type { Ticket, TicketStatus } from './api'
 import CreateTicketForm from './CreateTicketForm'
@@ -11,9 +12,12 @@ const COLUMNS: { status: TicketStatus; label: string }[] = [
   { status: 'done', label: 'Done' },
 ]
 
+const DRAG_FORMAT = 'text/plain'
+
 function App() {
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [theme, setTheme] = useState(resolveInitialTheme)
+  const [dropTarget, setDropTarget] = useState<TicketStatus | null>(null)
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -30,6 +34,14 @@ function App() {
   async function moveTicket(id: string, status: TicketStatus) {
     await updateTicketStatus(id, status)
     loadTickets()
+  }
+
+  function handleDrop(event: DragEvent, status: TicketStatus) {
+    event.preventDefault()
+    setDropTarget(null)
+    const id = event.dataTransfer.getData(DRAG_FORMAT)
+    if (!id) return
+    moveTicket(id, status)
   }
 
   return (
@@ -54,13 +66,31 @@ function App() {
       <CreateTicketForm onCreated={loadTickets} />
       <div className="board">
         {COLUMNS.map(({ status, label }) => (
-          <section key={status} aria-label={label} className="column">
+          <section
+            key={status}
+            aria-label={label}
+            className={dropTarget === status ? 'column drop-target' : 'column'}
+            onDragOver={(event) => {
+              event.preventDefault()
+              setDropTarget(status)
+            }}
+            onDragLeave={() => setDropTarget(null)}
+            onDrop={(event) => handleDrop(event, status)}
+          >
             <h2>{label}</h2>
             <ul>
               {tickets
                 .filter((ticket) => ticket.status === status)
                 .map((ticket) => (
-                  <li key={ticket.id} className="ticket">
+                  <li
+                    key={ticket.id}
+                    className="ticket"
+                    draggable
+                    onDragStart={(event) =>
+                      event.dataTransfer.setData(DRAG_FORMAT, ticket.id)
+                    }
+                    onDragEnd={() => setDropTarget(null)}
+                  >
                     <strong>{ticket.title}</strong>
                     {ticket.description && <p>{ticket.description}</p>}
                     <div className="ticket-actions">

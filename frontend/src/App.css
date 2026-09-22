@@ -123,3 +123,12 @@ main h1 {
   font-size: 0.75rem;
   cursor: pointer;
 }
+
+.column.drop-target {
+  outline: 2px dashed var(--accent, #4c6ef5);
+  outline-offset: -2px;
+}
+
+.ticket[draggable='true'] {
+  cursor: grab;
+}
