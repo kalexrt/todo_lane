@@ -125,13 +125,16 @@ describe('highlight survives the pointer crossing a column child (T-drag-ticket-
     const dataTransfer = makeDataTransfer()
 
     fireEvent.dragStart(cardFor('Hovering ticket'), { dataTransfer })
+    fireEvent.dragEnter(done, { dataTransfer })
     fireEvent.dragOver(done, { dataTransfer })
     expect(done).toHaveClass('drop-target')
 
-    // dragleave bubbles: moving onto the column's own heading fires it on the
-    // section. The highlight must not drop out while the pointer is still inside.
+    // Real browser order when the pointer crosses from the column's padding onto
+    // its heading: dragenter fires on the child and bubbles to the section, then
+    // dragleave fires on the section. The highlight must survive that pair.
     const heading = within(done).getByRole('heading', { name: 'Done' })
-    fireEvent.dragLeave(done, { dataTransfer, relatedTarget: heading })
+    fireEvent.dragEnter(heading, { dataTransfer })
+    fireEvent.dragLeave(done, { dataTransfer })
 
     expect(done).toHaveClass('drop-target')
   })
