@@ -41,6 +41,9 @@ function App() {
     setDropTarget(null)
     const id = event.dataTransfer.getData(DRAG_FORMAT)
     if (!id) return
+    const dropped = tickets.find((ticket) => ticket.id === id)
+    // dropping a card back on its own column is a no-op, not a redundant PATCH
+    if (!dropped || dropped.status === status) return
     moveTicket(id, status)
   }
 
